@@ -10,7 +10,7 @@
     "lambda:build": "./scripts/build-lambda.sh",
     "check-package-version": "if [ $(node -e \"console.log(require('./src/types/package.json').version)\") = $(node -e \"console.log(require('./package.json').version)\") ]; then exit 0; else echo 'Package versions are not in sync'; exit 1; fi;",
     "prerelease": "npm run check-package-version && npm run lambda:build",
-    "release": "gh-release",
+    "release": "gh-release --assets lambdas/graphile-worker-publish.zip",
     "test": "ts-mocha \"src/**/*.test.ts\"",
     "check-types": "tsc --noEmit",
     "lint": "eslint . --ext js,ts",
