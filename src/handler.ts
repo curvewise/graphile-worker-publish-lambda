@@ -31,7 +31,7 @@ export async function handler(
   const config = getConfig()
 
   const {
-    graphileWorkerDb: {
+    db: {
       region: awsRegion,
       hostname,
       port,

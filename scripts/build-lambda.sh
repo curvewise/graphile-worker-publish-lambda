@@ -12,7 +12,6 @@ rsync \
     --exclude "config/local*.yml" \
     package.json \
     package-lock.json \
-    .npmrc \
     build/ \
     config \
     node_modules \

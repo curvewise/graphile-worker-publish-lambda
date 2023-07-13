@@ -1,5 +1,5 @@
 export interface Config {
-  graphileWorkerDb: {
+  db: {
     region: string
     hostname: string
     port: number

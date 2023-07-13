@@ -8,7 +8,7 @@
         "awsProfile": {
           "type": "string"
         },
-        "graphileWorkerDb": {
+        "db": {
           "additionalProperties": false,
           "properties": {
             "databaseName": {
@@ -37,7 +37,7 @@
           "type": "object"
         }
       },
-      "required": ["graphileWorkerDb"],
+      "required": ["db"],
       "type": "object"
     }
   }

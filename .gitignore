@@ -11,5 +11,6 @@ rds.env
 !/config/local*.example.yml
 
 .DS_Store
+/build
 /dist
 /src/types/build
