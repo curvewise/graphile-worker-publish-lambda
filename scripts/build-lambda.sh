@@ -2,7 +2,7 @@
 
 set -eux -o pipefail
 
-mkdir -p build/lambda-zip-contents lambdas
+mkdir -p lambda-build/contents lambdas
 
 # Exclude .bin to avoid resolving symlinks in `.bin` which `npm prune` will
 # complain about later.
@@ -15,11 +15,11 @@ rsync \
     build/ \
     config \
     node_modules \
-    build/lambda-zip-contents
+    lambda-build/contents
 
-cd build/lambda-zip-contents
+cd lambda-build/contents
 
-npm prune --production
+npm prune --omit=dev
 rm package.json package-lock.json .npmrc
 
 zip -r ../../lambdas/graphile-worker-publish.zip .
