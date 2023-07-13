@@ -12,7 +12,7 @@ rsync \
     --exclude "config/local*.yml" \
     package.json \
     package-lock.json \
-    build/ \
+    dist/ \
     config \
     node_modules \
     lambda-build/contents
@@ -20,6 +20,6 @@ rsync \
 cd lambda-build/contents
 
 npm prune --omit=dev
-rm package.json package-lock.json .npmrc
+rm package.json package-lock.json
 
 zip -r ../../lambdas/graphile-worker-publish.zip .
