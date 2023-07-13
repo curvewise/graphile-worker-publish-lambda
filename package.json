@@ -1,6 +1,6 @@
 {
   "name": "graphile-worker-publish-lambda-root",
-  "version": "0.1.0",
+  "version": "0.1.0-alpha.0",
   "description": "Lambda for publishing tasks to a graphile-worker queue running on RDS",
   "scripts": {
     "prebuild": "del dist",
@@ -8,6 +8,9 @@
     "prepare": "npm run build",
     "prelambda:build": "npm run build && del lambda-build/ lambdas/",
     "lambda:build": "./scripts/build-lambda.sh",
+    "check-package-version": "if [ $(node -e \"console.log(require('./src/types/package.json').version)\") = $(node -e \"console.log(require('./package.json').version)\") ]; then exit 0; else echo 'Package versions are not in sync'; exit 1; fi;",
+    "prerelease": "npm run check-package-version && npm run lambda:build",
+    "release": "gh-release",
     "test": "ts-mocha \"src/**/*.test.ts\"",
     "check-types": "tsc --noEmit",
     "lint": "eslint . --ext js,ts",
@@ -45,6 +48,7 @@
     "eslint-plugin-import": "2.27.5",
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "6.1.1",
+    "gh-release": "7.0.2",
     "mocha": "10.2.0",
     "pg": "8.5.1",
     "prettier": "3.0.0",

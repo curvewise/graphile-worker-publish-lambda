@@ -1,13 +1,14 @@
 {
   "name": "graphile-worker-publish-lambda",
-  "version": "0.0.0",
-  "description": "Types for the vogue Lambda function",
+  "version": "0.1.0-alpha.0",
+  "description": "Types for the graphile-worker-publish Lambda function",
   "main": "build",
   "scripts": {
     "prepare": "npm run build",
     "prebuild": "../../node_modules/.bin/del build",
     "build": "../../node_modules/.bin/tsc",
-    "schema:update": "../../node_modules/.bin/1schema update"
+    "prepublishOnly": "cd .. && npm run check-package-version",
+    "postpublish": "cd .. && npm run release"
   },
   "dependencies": {
     "graphile-worker": "0.13.0"
