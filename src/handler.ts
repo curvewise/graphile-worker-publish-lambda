@@ -26,18 +26,12 @@ export async function handler(
   event: Input,
   context: any,
   // Inject `getConfig()` to bypass env-based config in unit tests.
-  { getConfig = getMemoizedConfig }: { getConfig?: () => Config } = {}
+  { getConfig = getMemoizedConfig }: { getConfig?: () => Config } = {},
 ): Promise<void> {
   const config = getConfig()
 
   const {
-    db: {
-      region: awsRegion,
-      hostname,
-      port,
-      username,
-      databaseName,
-    },
+    db: { region: awsRegion, hostname, port, username, databaseName },
     awsProfile,
   } = config
 
