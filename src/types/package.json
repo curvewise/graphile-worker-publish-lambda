@@ -1,0 +1,21 @@
+{
+  "name": "graphile-worker-publish-lambda",
+  "version": "0.0.0",
+  "description": "Types for the vogue Lambda function",
+  "main": "build",
+  "scripts": {
+    "prepare": "npm run build",
+    "prebuild": "../../node_modules/.bin/del build",
+    "build": "../../node_modules/.bin/tsc",
+    "schema:update": "../../node_modules/.bin/1schema update"
+  },
+  "dependencies": {
+    "graphile-worker": "0.13.0"
+  },
+  "files": [
+    "build"
+  ],
+  "repository": "curvewise/graphile-worker-publish-lambda",
+  "author": "Metabolize LLC",
+  "license": "Apache-2.0"
+}
