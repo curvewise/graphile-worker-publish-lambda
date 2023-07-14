@@ -6,16 +6,19 @@ import { jsonSchema as inputJsonSchema, Input } from './types/src'
 import * as configJsonSchema from './generated/config.schema.json'
 import { Config } from './config.schema'
 
-const ajv = new Ajv({ removeAdditional: true })
-  .addSchema(inputJsonSchema)
-  .addSchema(configJsonSchema)
+const inputValidator = new Ajv({ removeAdditional: true }).addSchema(
+  inputJsonSchema,
+)
+const configValidator = new Ajv({ removeAdditional: true }).addSchema(
+  configJsonSchema,
+)
 
 let memoizedConfig: Config | undefined
 export function getMemoizedConfig(): Config {
   if (!memoizedConfig) {
     const config = require('config').util.toObject()
-    if (!ajv.validate('#/definitions/Config', config)) {
-      throw Error(ajv.errorsText(ajv.errors))
+    if (!configValidator.validate('#/definitions/Config', config)) {
+      throw Error(configValidator.errorsText(configValidator.errors))
     }
     memoizedConfig = config as Config
   }
@@ -35,8 +38,8 @@ export async function handler(
     awsProfile,
   } = config
 
-  if (!ajv.validate('#/definitions/Input', event)) {
-    throw Error(ajv.errorsText(ajv.errors))
+  if (!inputValidator.validate('#/definitions/Input', event)) {
+    throw Error(inputValidator.errorsText(inputValidator.errors))
   }
 
   const { taskIdentifier, payload, taskSpec } = event
