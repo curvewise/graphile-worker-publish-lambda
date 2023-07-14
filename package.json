@@ -1,6 +1,6 @@
 {
   "name": "graphile-worker-publish-lambda-root",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0",
   "description": "Lambda for publishing tasks to a graphile-worker queue running on RDS",
   "scripts": {
     "prebuild": "del dist",
