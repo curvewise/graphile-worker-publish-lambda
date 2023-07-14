@@ -26,7 +26,7 @@ if (process.env.AWS_PROFILE !== 'curvewise') {
 const shouldDeployLambda = true
 const shouldCleanupLambda = true
 
-describe('vogue on Lambda', () => {
+describe('graphile-worker-publish Lambda', () => {
   const uniqueFunctionName = `graphile-worker-publish-test-${uuidHex()}`
   const taskIdentifier = 'graphile-worker-publish-test'
 
@@ -46,7 +46,7 @@ describe('vogue on Lambda', () => {
     }
   })
 
-  beforeEach('send a message to the queue', async function () {
+  beforeEach('send a message to the lambda function', async function () {
     this.timeout('15s')
 
     const taskPayload = { 'this-is': ['my', 'payload'] }
@@ -64,15 +64,21 @@ describe('vogue on Lambda', () => {
       .promise()
 
     console.log('response', response)
+
     if (response.StatusCode !== 200) {
       console.error(JSON.stringify(response, undefined, 2))
     }
     expect(response.StatusCode).to.equal(200)
     assert.ok(response.Payload)
-    console.log(response.Payload)
+
+    if (response.FunctionError) {
+      const payload = JSON.parse(response.Payload.toString())
+      console.log(payload.trace.join('\n'))
+    }
+    expect(response).not.to.have.property('FunctionError')
   })
 
-  it('should be placed in the queue', async function () {
+  it('should have been placed in the queue', async function () {
     this.timeout('10s')
 
     const runner = await run({

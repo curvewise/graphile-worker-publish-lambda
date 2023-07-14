@@ -2,7 +2,7 @@ import path from 'path'
 import { createFunction, deleteFunction } from 'werkit'
 
 export const AWS_REGION = 'us-east-1'
-export const LAMBDA_ROLE = 'graphile-worker-publish-lambda-test'
+export const LAMBDA_ROLE = 'arn:aws:iam::312760052655:role/graphile-worker-publish-lambda-test'
 export const SCRATCH_BUCKET = 'goldilocks-scratch-test'
 export const TIMEOUT_SECONDS = 10
 export const MEMORY_SIZE_MB = 256
