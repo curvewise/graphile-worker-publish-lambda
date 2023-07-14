@@ -1,6 +1,6 @@
 {
   "name": "graphile-worker-publish-lambda",
-  "version": "0.1.0-alpha.0",
+  "version": "0.1.0",
   "description": "Types for the graphile-worker-publish Lambda function",
   "main": "build",
   "scripts": {
