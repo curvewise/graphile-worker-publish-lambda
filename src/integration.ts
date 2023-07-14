@@ -46,20 +46,19 @@ describe('graphile-worker-publish Lambda', () => {
     }
   })
 
+  // TODO: Drain the pool before starting.
+
+  const payload = { 'this-is': ['my', 'payload', uniqueFunctionName] }
+
   beforeEach('send a message to the lambda function', async function () {
     this.timeout('15s')
 
-    const taskPayload = { 'this-is': ['my', 'payload'] }
-    const payload: Input = {
-      taskIdentifier,
-      payload: taskPayload,
-    }
-
+    const lambdaPayload: Input = { taskIdentifier, payload }
     const response = await new AWS.Lambda({ region: AWS_REGION })
       .invoke({
         FunctionName: uniqueFunctionName,
         InvocationType: 'RequestResponse',
-        Payload: JSON.stringify(payload),
+        Payload: JSON.stringify(lambdaPayload),
       })
       .promise()
 
@@ -83,13 +82,14 @@ describe('graphile-worker-publish Lambda', () => {
 
     let gotResponse = false
 
-    const runner = await runOnce({
+    await runOnce({
       pgPool: createRdsPgPool(RDS_IAM_PG_CONFIG),
       noHandleSignals: false,
       pollInterval: 1000,
       taskList: {
         [taskIdentifier]: _payload => {
-          console.log('Received vogue response', _payload)
+          console.log('Received payload', _payload)
+          expect(_payload).to.deep.equal(payload)
           gotResponse = true
         },
       },
