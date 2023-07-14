@@ -11,9 +11,10 @@ import { Config } from './config.schema'
 const inputValidator = new Ajv({ removeAdditional: true }).addSchema(
   inputJsonSchema,
 )
-const configValidator = new Ajv({ removeAdditional: true }).addSchema(
-  configJsonSchema,
-)
+const configValidator = new Ajv({
+  removeAdditional: true,
+  coerceTypes: true,
+}).addSchema(configJsonSchema)
 
 let memoizedConfig: Config | undefined
 export function getMemoizedConfig(): Config {

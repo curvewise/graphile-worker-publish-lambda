@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+- Fix an issue where the config won't validate.
+
 ## 0.1.1
 
-- Fix an (intermittent?) issue where Ajv throws an error on startup.
+- Fix an issue where Ajv throws an error on startup.
 
 ## 0.1.0
 
