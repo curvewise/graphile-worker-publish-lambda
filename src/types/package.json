@@ -10,9 +10,6 @@
     "prepublishOnly": "cd .. && npm run check-package-version",
     "postpublish": "cd .. && npm run release"
   },
-  "dependencies": {
-    "graphile-worker": "0.13.0"
-  },
   "files": [
     "build"
   ],
