@@ -9,9 +9,9 @@ import { Config } from './config.schema'
 
 // Use separate Ajv instances to try to dodge (intermittent?) error
 // "schema with key or id \"\" already exists".
-const inputValidator = addFormats(new Ajv({ removeAdditional: true }).addSchema(
-  inputJsonSchema,
-))
+const inputValidator = addFormats(
+  new Ajv({ removeAdditional: true }).addSchema(inputJsonSchema),
+)
 const configValidator = new Ajv({
   removeAdditional: true,
   coerceTypes: true,
