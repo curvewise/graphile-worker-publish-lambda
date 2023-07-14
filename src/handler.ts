@@ -6,6 +6,8 @@ import { jsonSchema as inputJsonSchema, Input } from './types/src'
 import * as configJsonSchema from './generated/config.schema.json'
 import { Config } from './config.schema'
 
+// Use separate Ajv instances to try to dodge (intermittent?) error
+// "schema with key or id \"\" already exists".
 const inputValidator = new Ajv({ removeAdditional: true }).addSchema(
   inputJsonSchema,
 )
