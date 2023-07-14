@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.3
+
+- Fix a crash on startup.
+
 ## 0.1.2
 
 - Fix an issue where the config won't validate.
