@@ -55,7 +55,6 @@ jobs:
           when: always
           command: npm run check-package-version
 
-
   format:
     <<: *with_node
 
