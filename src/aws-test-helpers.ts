@@ -18,7 +18,7 @@ export const RDS_IAM_PG_CONFIG = {
 }
 
 export const RDS_IAM_ENV_VARS = {
-  PG_HOST: RDS_IAM_PG_CONFIG.address.host,
+  PG_HOSTNAME: RDS_IAM_PG_CONFIG.address.host,
   PG_PORT: `${RDS_IAM_PG_CONFIG.address.port}`,
   PG_USERNAME: RDS_IAM_PG_CONFIG.address.user,
   PG_DBNAME: RDS_IAM_PG_CONFIG.address.database,

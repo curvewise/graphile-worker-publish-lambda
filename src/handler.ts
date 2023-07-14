@@ -1,4 +1,5 @@
 import Ajv from 'ajv'
+import addFormats from 'ajv-formats'
 import { quickAddJob } from 'graphile-worker'
 import { createRdsPgPool } from 'rds-iam-pg'
 
@@ -8,9 +9,9 @@ import { Config } from './config.schema'
 
 // Use separate Ajv instances to try to dodge (intermittent?) error
 // "schema with key or id \"\" already exists".
-const inputValidator = new Ajv({ removeAdditional: true }).addSchema(
+const inputValidator = addFormats(new Ajv({ removeAdditional: true }).addSchema(
   inputJsonSchema,
-)
+))
 const configValidator = new Ajv({
   removeAdditional: true,
   coerceTypes: true,
