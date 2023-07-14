@@ -2,7 +2,7 @@ import assert from 'assert'
 import AWS from 'aws-sdk'
 import chai, { expect } from 'chai'
 import dirtyChai from 'dirty-chai'
-import { run } from 'graphile-worker'
+import { runOnce } from 'graphile-worker'
 import { createRdsPgPool } from 'rds-iam-pg'
 
 import {
@@ -81,18 +81,20 @@ describe('graphile-worker-publish Lambda', () => {
   it('should have been placed in the queue', async function () {
     this.timeout('10s')
 
-    const runner = await run({
+    let gotResponse = false
+
+    const runner = await runOnce({
       pgPool: createRdsPgPool(RDS_IAM_PG_CONFIG),
-      // Install signal handlers for graceful shutdown on SIGINT, SIGTERM, etc.
       noHandleSignals: false,
       pollInterval: 1000,
       taskList: {
         [taskIdentifier]: _payload => {
-          // const payload = _payload as { success: boolean; error: string }
           console.log('Received vogue response', _payload)
-          runner.stop()
+          gotResponse = true
         },
       },
     })
+
+    expect(gotResponse).to.be.true()
   })
 })
