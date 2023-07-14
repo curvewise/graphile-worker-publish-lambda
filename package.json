@@ -5,7 +5,6 @@
   "scripts": {
     "prebuild": "del dist",
     "build": "tsc",
-    "prepare": "npm run build",
     "prelambda:build": "npm run build && del lambda-build/ lambdas/",
     "lambda:build": "./scripts/build-lambda.sh",
     "check-package-version": "if [ $(node -e \"console.log(require('./src/types/package.json').version)\") = $(node -e \"console.log(require('./package.json').version)\") ]; then exit 0; else echo 'Package versions are not in sync'; exit 1; fi;",
@@ -62,7 +61,7 @@
     "ts-mocha": "10.0.0",
     "ts-node": "10.9.1",
     "typescript": "5.1.6",
-    "werkit": "0.29.0"
+    "werkit": "0.30.0"
   },
   "mocha": {
     "extension": [
