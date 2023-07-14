@@ -11,5 +11,7 @@ rds.env
 !/config/local*.example.yml
 
 .DS_Store
+/lambda-build
+/lambdas
 /dist
 /src/types/build
