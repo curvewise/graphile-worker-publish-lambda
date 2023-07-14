@@ -50,6 +50,11 @@ jobs:
           name: Check lint
           command: npm run lint
 
+      - run:
+          name: Check that package version numbers are in sync
+          when: always
+          command: npm run check-package-version
+
   format:
     <<: *with_node
 
