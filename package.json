@@ -27,7 +27,7 @@
     "config": "3.3.9",
     "graphile-worker": "0.13.0",
     "pg": "8.11.1",
-    "rds-iam-pg": "2.0.0",
+    "rds-iam-pg": "2.1.0",
     "types": "./src/types"
   },
   "devDependencies": {
