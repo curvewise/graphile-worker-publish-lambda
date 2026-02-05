@@ -26,10 +26,13 @@ function getPgPool(): ReturnType<typeof createRdsPgPool> {
     if (!configValidator.validate('#/definitions/Config', config)) {
       throw Error(configValidator.errorsText(configValidator.errors))
     }
+
+    const validatedConfig = config as Config
+
     const {
       db: { region: awsRegion, hostname, port, username, databaseName },
       awsProfile,
-    } = config
+    } = validatedConfig
 
     pgPool = createRdsPgPool({
       awsRegion,
@@ -43,7 +46,7 @@ function getPgPool(): ReturnType<typeof createRdsPgPool> {
         user: username,
         database: databaseName,
       },
-    })
+    } as Parameters<typeof createRdsPgPool>[0])
   }
   return pgPool
 }
