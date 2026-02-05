@@ -7,6 +7,7 @@ export const LAMBDA_ROLE =
 export const SCRATCH_BUCKET = 'goldilocks-scratch-test'
 export const TIMEOUT_SECONDS = 10
 export const MEMORY_SIZE_MB = 256
+export const RUNTIME = 'nodejs20.x'
 
 export const RDS_IAM_PG_CONFIG = {
   awsRegion: AWS_REGION,
@@ -37,6 +38,7 @@ export async function createLambdaFunction(
 ): Promise<void> {
   await createFunction({
     region: AWS_REGION,
+    runtime: RUNTIME,
     functionName,
     handler: 'handler.handler',
     role: LAMBDA_ROLE,
