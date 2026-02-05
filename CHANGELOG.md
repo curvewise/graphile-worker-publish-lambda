@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.2.0
+
+- Bump rds-iam-pg to obtain latest SSL/TLS certificates for RDS.
+
 ## 0.1.3
 
 - Fix a crash on startup.
