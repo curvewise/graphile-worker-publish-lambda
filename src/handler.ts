@@ -33,6 +33,7 @@ let pgPool: ReturnType<typeof createRdsPgPool> | undefined;
 
 function getPgPool(): ReturnType<typeof createRdsPgPool> {
   if (!pgPool) {
+    console.log('Creating RDS pool')
     const config = getMemoizedConfig();
     const {
       db: { region: awsRegion, hostname, port, username, databaseName },
