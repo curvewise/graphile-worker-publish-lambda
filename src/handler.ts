@@ -17,28 +17,19 @@ const configValidator = new Ajv({
   coerceTypes: true,
 }).addSchema(configJsonSchema)
 
-let memoizedConfig: Config | undefined
-export function getMemoizedConfig(): Config {
-  if (!memoizedConfig) {
-    const config = require('config').util.toObject()
-    if (!configValidator.validate('#/definitions/Config', config)) {
-      throw Error(configValidator.errorsText(configValidator.errors))
-    }
-    memoizedConfig = config as Config
-  }
-  return memoizedConfig
-}
-
-let pgPool: ReturnType<typeof createRdsPgPool> | undefined;
+let pgPool: ReturnType<typeof createRdsPgPool> | undefined
 
 function getPgPool(): ReturnType<typeof createRdsPgPool> {
   if (!pgPool) {
     console.log('Creating RDS pool')
-    const config = getMemoizedConfig();
+    const config = require('config').util.toObject()
+    if (!configValidator.validate('#/definitions/Config', config)) {
+      throw Error(configValidator.errorsText(configValidator.errors))
+    }
     const {
       db: { region: awsRegion, hostname, port, username, databaseName },
       awsProfile,
-    } = config;
+    } = config
 
     pgPool = createRdsPgPool({
       awsRegion,
@@ -52,16 +43,12 @@ function getPgPool(): ReturnType<typeof createRdsPgPool> {
         user: username,
         database: databaseName,
       },
-    });
+    })
   }
-  return pgPool;
+  return pgPool
 }
 
-export async function handler(
-  event: Input,
-  context: any,
-): Promise<void> {
-
+export async function handler(event: Input, context: any): Promise<void> {
   if (!inputValidator.validate('#/definitions/Input', event)) {
     throw Error(inputValidator.errorsText(inputValidator.errors))
   }
@@ -69,7 +56,7 @@ export async function handler(
   const { taskIdentifier, payload, taskSpec } = event
 
   console.log('Publishing to queue')
-  const pgPool = getPgPool();
+  const pgPool = getPgPool()
   await quickAddJob({ pgPool }, taskIdentifier, payload, taskSpec)
   console.log('Finished publishing to queue')
 }
