@@ -69,5 +69,8 @@
     ],
     "require": "ts-node/register"
   },
-  "repository": "curvewise/graphile-worker-publish-lambda"
+  "repository": "curvewise/graphile-worker-publish-lambda",
+  "engines": {
+    "node": "20.20.0"
+  }
 }
