@@ -2,6 +2,7 @@ import Ajv from 'ajv'
 import addFormats from 'ajv-formats'
 import { quickAddJob } from 'graphile-worker'
 import { createRdsPgPool } from 'rds-iam-pg'
+import { Pool } from 'pg'
 
 import { jsonSchema as inputJsonSchema, Input } from './types/src'
 import * as configJsonSchema from './generated/config.schema.json'
@@ -17,9 +18,9 @@ const configValidator = new Ajv({
   coerceTypes: true,
 }).addSchema(configJsonSchema)
 
-let pgPool: ReturnType<typeof createRdsPgPool> | undefined
+let pgPool: Pool | undefined
 
-function getPgPool(): ReturnType<typeof createRdsPgPool> {
+function getPgPool(): Pool {
   if (!pgPool) {
     console.log('Creating RDS pool')
     const config = require('config').util.toObject()
