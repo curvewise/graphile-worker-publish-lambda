@@ -4,7 +4,7 @@
 
 ### BREAKING CHANGES
 
-- Upgrade to Node 24. 
+- Upgrade to Node 24.
 
 ### Bug fixes
 
