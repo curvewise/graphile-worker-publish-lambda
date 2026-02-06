@@ -73,6 +73,6 @@
   },
   "repository": "curvewise/graphile-worker-publish-lambda",
   "engines": {
-    "node": "20.20.0"
+    "node": "24.13.0"
   }
 }
