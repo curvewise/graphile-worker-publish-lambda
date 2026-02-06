@@ -1,5 +1,5 @@
 import assert from 'assert'
-import AWS from 'aws-sdk'
+import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda'
 import chai, { expect } from 'chai'
 import dirtyChai from 'dirty-chai'
 import { runOnce } from 'graphile-worker'
@@ -9,6 +9,7 @@ import {
   AWS_REGION,
   createLambdaFunction,
   deleteLambdaFunction,
+  setReservedConcurrency,
   RDS_IAM_PG_CONFIG,
 } from './aws-test-helpers'
 import { Input } from './types'
@@ -26,9 +27,37 @@ if (process.env.AWS_PROFILE !== 'curvewise') {
 const shouldDeployLambda = true
 const shouldCleanupLambda = true
 
+// For a stress test, increase this from 10 to 10000.
+const numRequests = 10
+
 describe('graphile-worker-publish Lambda', () => {
-  const uniqueFunctionName = `graphile-worker-publish-test-${uuidHex()}`
+  let pgPool: ReturnType<typeof createRdsPgPool>
+  before(async () => {
+    pgPool = createRdsPgPool(RDS_IAM_PG_CONFIG)
+  })
+
   const taskIdentifier = 'graphile-worker-publish-test'
+
+  before('drain the queue', async function () {
+    this.timeout('10m')
+    let requestCount = 0
+    console.log(`Draining existing messages from the ${taskIdentifier} queue`)
+    await runOnce({
+      pgPool,
+      noHandleSignals: false,
+      pollInterval: 10,
+      taskList: {
+        [taskIdentifier]: () => {
+          requestCount += 1
+        },
+      },
+    })
+    console.log(
+      `Drained ${requestCount} messages from the ${taskIdentifier} queue`,
+    )
+  })
+
+  const uniqueFunctionName = `graphile-worker-publish-test-${uuidHex()}`
 
   let lambdaFunctionCreated = false
   before('create the unique lambda function', async function () {
@@ -36,6 +65,9 @@ describe('graphile-worker-publish Lambda', () => {
     if (shouldDeployLambda) {
       console.error(`Using unique function name ${uniqueFunctionName}`)
       await createLambdaFunction(uniqueFunctionName)
+      if (numRequests > 20) {
+        await setReservedConcurrency(uniqueFunctionName, 20)
+      }
       lambdaFunctionCreated = true
     }
   })
@@ -46,55 +78,55 @@ describe('graphile-worker-publish Lambda', () => {
     }
   })
 
-  // TODO: Drain the pool before starting.
-
   const payload = { 'this-is': ['my', 'payload', uniqueFunctionName] }
 
   beforeEach('send a message to the lambda function', async function () {
-    this.timeout('15s')
+    this.timeout('10m')
 
     const lambdaPayload: Input = { taskIdentifier, payload }
-    const response = await new AWS.Lambda({ region: AWS_REGION })
-      .invoke({
-        FunctionName: uniqueFunctionName,
-        InvocationType: 'RequestResponse',
-        Payload: JSON.stringify(lambdaPayload),
-      })
-      .promise()
+    const lambdaClient = new LambdaClient({ region: AWS_REGION })
+    const command = new InvokeCommand({
+      FunctionName: uniqueFunctionName,
+      InvocationType: 'RequestResponse',
+      Payload: JSON.stringify(lambdaPayload),
+    })
 
-    console.log('response', response)
+    for (let i = 0; i < numRequests; i++) {
+      const response = await lambdaClient.send(command)
 
-    if (response.StatusCode !== 200) {
-      console.error(JSON.stringify(response, undefined, 2))
+      if (response.StatusCode !== 200) {
+        console.error(JSON.stringify(response, undefined, 2))
+      }
+      expect(response.StatusCode).to.equal(200)
+      assert.ok(response.Payload)
+
+      if (response.FunctionError) {
+        const payload = JSON.parse(Buffer.from(response.Payload).toString())
+        console.log(payload.trace.join('\n'))
+      }
+      expect(response).not.to.have.property('FunctionError')
+      console.log(`Invoked lambda ${i + 1} of ${numRequests}`)
     }
-    expect(response.StatusCode).to.equal(200)
-    assert.ok(response.Payload)
-
-    if (response.FunctionError) {
-      const payload = JSON.parse(response.Payload.toString())
-      console.log(payload.trace.join('\n'))
-    }
-    expect(response).not.to.have.property('FunctionError')
   })
 
   it('should have been placed in the queue', async function () {
-    this.timeout('10s')
+    this.timeout('2m')
 
-    let gotResponse = false
+    let responseCount = 0
 
     await runOnce({
-      pgPool: createRdsPgPool(RDS_IAM_PG_CONFIG),
+      pgPool,
       noHandleSignals: false,
-      pollInterval: 1000,
+      pollInterval: 10,
       taskList: {
         [taskIdentifier]: _payload => {
-          console.log('Received payload', _payload)
           expect(_payload).to.deep.equal(payload)
-          gotResponse = true
+          responseCount += 1
+          console.log(`Received ${responseCount} of ${numRequests} messages`)
         },
       },
     })
 
-    expect(gotResponse).to.be.true()
+    expect(responseCount).to.equal(numRequests)
   })
 })

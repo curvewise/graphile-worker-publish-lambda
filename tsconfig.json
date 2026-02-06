@@ -6,6 +6,7 @@
     "esModuleInterop": true,
     "allowSyntheticDefaultImports": true,
     "module": "commonjs",
+    "moduleResolution": "node",
     "outDir": "dist/",
     "resolveJsonModule": true,
     "sourceMap": true,
