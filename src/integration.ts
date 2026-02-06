@@ -3,6 +3,7 @@ import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda'
 import chai, { expect } from 'chai'
 import dirtyChai from 'dirty-chai'
 import { runOnce } from 'graphile-worker'
+import { Pool } from 'pg'
 import { createRdsPgPool } from 'rds-iam-pg'
 
 import {
@@ -12,6 +13,7 @@ import {
   setReservedConcurrency,
   RDS_IAM_PG_CONFIG,
 } from './aws-test-helpers'
+import { resetGraphileWorkerDatabase } from './graphile-worker-test-helpers'
 import { Input } from './types'
 import { uuidHex } from './uuid-hex-test-helpers'
 
@@ -20,6 +22,8 @@ chai.use(dirtyChai)
 if (process.env.AWS_PROFILE !== 'curvewise') {
   throw Error('Expected the curvewise AWS profile')
 }
+
+const shouldResetSchema = false
 
 // For faster iteration on the integration test using an existing Lambda
 // deployment, set `shouldCleanupLambda` to false. Then on the next iteration,
@@ -31,10 +35,16 @@ const shouldCleanupLambda = true
 const numRequests = 10
 
 describe('graphile-worker-publish Lambda', () => {
-  let pgPool: ReturnType<typeof createRdsPgPool>
+  let pgPool: Pool
   before(async () => {
     pgPool = createRdsPgPool(RDS_IAM_PG_CONFIG)
   })
+
+  if (shouldResetSchema) {
+    before(async () => {
+      await resetGraphileWorkerDatabase(pgPool)
+    })
+  }
 
   const taskIdentifier = 'graphile-worker-publish-test'
 
