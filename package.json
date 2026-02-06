@@ -28,7 +28,7 @@
     "ajv": "8.17.1",
     "ajv-formats": "3.0.1",
     "config": "4.2.0",
-    "graphile-worker": "0.16.6",
+    "graphile-worker": "0.15.1",
     "pg": "8.18.0",
     "rds-iam-pg": "2.1.0",
     "types": "./src/types"
