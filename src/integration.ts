@@ -52,7 +52,9 @@ describe('graphile-worker-publish Lambda', () => {
         },
       },
     })
-    console.log(`Drained ${requestCount} messages from the ${taskIdentifier} queue`)
+    console.log(
+      `Drained ${requestCount} messages from the ${taskIdentifier} queue`,
+    )
   })
 
   const uniqueFunctionName = `graphile-worker-publish-test-${uuidHex()}`
@@ -64,7 +66,7 @@ describe('graphile-worker-publish Lambda', () => {
       console.error(`Using unique function name ${uniqueFunctionName}`)
       await createLambdaFunction(uniqueFunctionName)
       if (numRequests > 20) {
-          await setReservedConcurrency(uniqueFunctionName, 20)
+        await setReservedConcurrency(uniqueFunctionName, 20)
       }
       lambdaFunctionCreated = true
     }
