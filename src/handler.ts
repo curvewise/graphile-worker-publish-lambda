@@ -17,55 +17,49 @@ const configValidator = new Ajv({
   coerceTypes: true,
 }).addSchema(configJsonSchema)
 
-let memoizedConfig: Config | undefined
-export function getMemoizedConfig(): Config {
-  if (!memoizedConfig) {
+let pgPool: ReturnType<typeof createRdsPgPool> | undefined
+
+function getPgPool(): ReturnType<typeof createRdsPgPool> {
+  if (!pgPool) {
+    console.log('Creating RDS pool')
     const config = require('config').util.toObject()
     if (!configValidator.validate('#/definitions/Config', config)) {
       throw Error(configValidator.errorsText(configValidator.errors))
     }
-    memoizedConfig = config as Config
+
+    const validatedConfig = config as Config
+
+    const {
+      db: { region: awsRegion, hostname, port, username, databaseName },
+      awsProfile,
+    } = validatedConfig
+
+    pgPool = createRdsPgPool({
+      awsRegion,
+      awsProfile,
+      max: 1,
+      connectionTimeoutMillis: 1000,
+      idleTimeoutMillis: 15000,
+      address: {
+        host: hostname,
+        port,
+        user: username,
+        database: databaseName,
+      },
+    } as Parameters<typeof createRdsPgPool>[0])
   }
-  return memoizedConfig
+  return pgPool
 }
 
-export async function handler(
-  event: Input,
-  context: any,
-  // Inject `getConfig()` to bypass env-based config in unit tests.
-  { getConfig = getMemoizedConfig }: { getConfig?: () => Config } = {},
-): Promise<void> {
-  const config = getConfig()
-
-  const {
-    db: { region: awsRegion, hostname, port, username, databaseName },
-    awsProfile,
-  } = config
-
+export async function handler(event: Input, context: any): Promise<void> {
   if (!inputValidator.validate('#/definitions/Input', event)) {
     throw Error(inputValidator.errorsText(inputValidator.errors))
   }
 
   const { taskIdentifier, payload, taskSpec } = event
 
-  console.log('Creating queue client')
-  const pgPool = createRdsPgPool({
-    awsRegion,
-    awsProfile,
-    address: {
-      host: hostname,
-      port,
-      user: username,
-      database: databaseName,
-    },
-  })
-
-  try {
-    console.log('Publishing to queue')
-    await quickAddJob({ pgPool }, taskIdentifier, payload, taskSpec)
-    console.log('Finished publishing to queue')
-  } finally {
-    await pgPool.end()
-    console.log('Closed queue client')
-  }
+  console.log('Publishing to queue')
+  const pgPool = getPgPool()
+  await quickAddJob({ pgPool }, taskIdentifier, payload, taskSpec)
+  console.log('Finished publishing to queue')
 }
