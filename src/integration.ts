@@ -1,5 +1,5 @@
 import assert from 'assert'
-import AWS from 'aws-sdk'
+import { InvokeCommand, LambdaClient } from '@aws-sdk/client-lambda'
 import chai, { expect } from 'chai'
 import dirtyChai from 'dirty-chai'
 import { runOnce } from 'graphile-worker'
@@ -54,13 +54,13 @@ describe('graphile-worker-publish Lambda', () => {
     this.timeout('15s')
 
     const lambdaPayload: Input = { taskIdentifier, payload }
-    const response = await new AWS.Lambda({ region: AWS_REGION })
-      .invoke({
-        FunctionName: uniqueFunctionName,
-        InvocationType: 'RequestResponse',
-        Payload: JSON.stringify(lambdaPayload),
-      })
-      .promise()
+    const lambdaClient = new LambdaClient({ region: AWS_REGION })
+    const command = new InvokeCommand({
+      FunctionName: uniqueFunctionName,
+      InvocationType: 'RequestResponse',
+      Payload: JSON.stringify(lambdaPayload),
+    })
+    const response = await lambdaClient.send(command)
 
     console.log('response', response)
 
@@ -71,7 +71,7 @@ describe('graphile-worker-publish Lambda', () => {
     assert.ok(response.Payload)
 
     if (response.FunctionError) {
-      const payload = JSON.parse(response.Payload.toString())
+      const payload = JSON.parse(Buffer.from(response.Payload).toString())
       console.log(payload.trace.join('\n'))
     }
     expect(response).not.to.have.property('FunctionError')

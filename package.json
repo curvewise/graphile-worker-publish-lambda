@@ -33,16 +33,17 @@
     "types": "./src/types"
   },
   "devDependencies": {
+    "@aws-sdk/client-lambda": "3.984.0",
     "@metabolize/uuid-to-hex": "2.0.0",
     "@types/chai": "5.2.3",
     "@types/chai-as-promised": "8.0.2",
     "@types/dirty-chai": "2.0.5",
     "@types/mocha": "10.0.10",
+    "@types/node": "25.2.1",
     "@types/pg": "8.16.0",
     "@typescript-eslint/eslint-plugin": "6.0.0",
     "@typescript-eslint/parser": "6.0.0",
     "1schema": "0.2.0",
-    "aws-sdk": "2.1354.0",
     "chai": "6.2.2",
     "chai-as-promised": "8.0.2",
     "del-cli": "7.0.0",
