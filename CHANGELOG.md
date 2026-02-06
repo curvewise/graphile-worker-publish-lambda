@@ -1,5 +1,19 @@
 # Changelog
 
+## 1.0.0
+
+### BREAKING CHANGES
+
+- Upgrade to Node 24.
+
+### Bug fixes
+
+- Reuse the database pool instead of creating a new one on each request.
+
+### Other changes
+
+- Bump graphile-worker to 0.15.1.
+
 ## 0.2.0
 
 - Bump rds-iam-pg to obtain latest SSL/TLS certificates for RDS.
