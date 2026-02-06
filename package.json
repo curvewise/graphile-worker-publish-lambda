@@ -11,6 +11,8 @@
     "prerelease": "npm run check-package-version && npm run lambda:build",
     "release": "gh-release --assets lambdas/graphile-worker-publish.zip",
     "test": "ts-mocha \"src/**/*.test.ts\"",
+    "preintegration": "npm run lambda:build",
+    "integration": "AWS_PROFILE=curvewise mocha src/integration.ts",
     "check-types": "tsc --noEmit",
     "lint": "eslint . --ext js,ts",
     "format:check": "prettier --check \"**/*.@(ts|js|md|json|yml)\"",
@@ -31,16 +33,20 @@
     "types": "./src/types"
   },
   "devDependencies": {
+    "@metabolize/uuid-to-hex": "2.0.0",
     "@types/chai": "4.3.5",
     "@types/chai-as-promised": "7.1.5",
+    "@types/dirty-chai": "2.0.2",
     "@types/mocha": "10.0.1",
     "@types/pg": "8.10.2",
+    "@types/uuid": "9.0.2",
     "@typescript-eslint/eslint-plugin": "6.0.0",
     "@typescript-eslint/parser": "6.0.0",
     "1schema": "0.2.0",
     "aws-sdk": "2.1354.0",
     "chai": "4.3.7",
     "chai-as-promised": "7.1.1",
+    "dirty-chai": "2.0.1",
     "del-cli": "5.0.0",
     "eslint": "8.44.0",
     "eslint-config-prettier": "8.8.0",
@@ -49,12 +55,22 @@
     "eslint-plugin-node": "11.1.0",
     "eslint-plugin-promise": "6.1.1",
     "gh-release": "7.0.2",
-    "mocha": "10.8.2",
+    "mocha": "11.7.5",
     "pg": "8.5.1",
     "prettier": "3.0.0",
     "ts-mocha": "11.1.0",
-    "ts-node": "10.9.1",
-    "typescript": "5.1.6"
+    "ts-node": "10.9.2",
+    "typescript": "5.1.6",
+    "werkit": "0.30.1"
   },
-  "repository": "curvewise/graphile-worker-publish-lambda"
+  "mocha": {
+    "extension": [
+      "ts"
+    ],
+    "require": "ts-node/register"
+  },
+  "repository": "curvewise/graphile-worker-publish-lambda",
+  "engines": {
+    "node": "20.20.0"
+  }
 }
