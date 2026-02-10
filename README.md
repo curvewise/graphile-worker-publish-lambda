@@ -12,4 +12,4 @@
 
 If you get an authorization failure message, try deleting the `gh-release` config
 folder and restarting the auth flow. On a Mac, this is at
-`~/Library/Application Support/gh-release`.
+`~/Library/Application\ Support/gh-release`.
